@@ -1,11 +1,34 @@
-function Home({ user }) {
-  retun(
-    <div className="card" style="width: 18rem;">
-      <div className="card-body">
-        <h5 className="card-title">{user.username}</h5>
-        <div className="card-link">{user.email}</div>
-        <div className="card-link">{user.mobileno}</div>
-      </div>
+import { Outlet, Link } from "react-router-dom";
+
+function Home({ users }) {
+  return (
+    <div className="row">
+      {users.map((user) => {
+        return (
+          <div className="col-4">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{user.username}</h5>
+                <p>
+                  {user.email} || {user.mobile}
+                </p>
+                <Link
+                  class="card-link btn btn-warning"
+                  to={`/user/edit/${user.id}`}
+                >
+                  Edit
+                </Link>
+                <Link
+                  class="card-link btn btn-primary"
+                  to={`/user/view/${user.id}`}
+                >
+                  View
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
