@@ -13,25 +13,57 @@ const App = () => {
     const getformData = JSON.parse(localStorage.getItem("formData")) || [];
     setFormData(getformData);
   }, []);
-  const formSubmit = (curData) => {
-    const isExistingData = formData.some(
-      (prevData) =>
-        prevData.email === curData.email || prevData.mobile === curData.mobile
-    );
-    if (isExistingData) {
-      // Handle case where data already exists
-      return {
-        status: "fail",
-        message: "Data with this email or mobile number already exists",
-      };
-    } else {
+  const formSubmit = (curData, mode, id) => {
+    if (mode === "new") {
+      const isExistingData = formData.some(
+        (prevData) =>
+          prevData.email === curData.email || prevData.mobile === curData.mobile
+      );
+      if (isExistingData) {
+        // Handle case where data already exists
+        return {
+          status: "fail",
+          message: "Data with this email or mobile number already exists",
+        };
+      }
+
       // Add curData to state and localStorage
       curData.id = formData.length + 1;
-      setFormData((prevFormData) => [...prevFormData, curData]);
-      localStorage.setItem("formData", JSON.stringify([...formData, curData]));
+      setFormData((prevFormData) => {
+        const updatedFormData = [...prevFormData, curData];
+        localStorage.setItem("formData", JSON.stringify(updatedFormData));
+        return updatedFormData;
+      });
+
       return {
         status: "success",
         message: "Data saved successfully",
+      };
+    } else if (mode === "edit") {
+      setFormData((prevFormData) => {
+        const updatedFormData = prevFormData.map((prevData) => {
+          return prevData.id === id ? { ...curData, id } : prevData;
+        });
+        localStorage.setItem("formData", JSON.stringify(updatedFormData));
+        return updatedFormData;
+      });
+
+      return {
+        status: "success",
+        message: "Data updated successfully",
+      };
+    } else if (mode === "delete") {
+      setFormData((prevFormData) => {
+        const updatedFormData = prevFormData.filter((prevData) => {
+          return prevData.id !== parseInt(id);
+        });
+        localStorage.setItem("formData", JSON.stringify(updatedFormData));
+        return updatedFormData;
+      });
+
+      return {
+        status: "success",
+        message: "Data deleted successfully",
       };
     }
   };
@@ -60,6 +92,16 @@ const App = () => {
               <UserForm
                 formSubmit={formSubmit}
                 mode="view"
+                formData={formData}
+              />
+            }
+          />
+          <Route
+            path="user/delete/:id"
+            element={
+              <UserForm
+                formSubmit={formSubmit}
+                mode="delete"
                 formData={formData}
               />
             }

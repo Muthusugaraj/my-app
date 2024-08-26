@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const UserForm = ({ formSubmit, mode, formData }) => {
   const [formInputs, setFormInputs] = useState({});
@@ -7,9 +7,10 @@ const UserForm = ({ formSubmit, mode, formData }) => {
   const inputEmail = useRef();
   const inputMobile = useRef();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (mode == "edit" || mode == "view") {
+    if (mode == "edit" || mode == "view" || mode == "delete") {
       const currentData = formData.find((data) => data.id == id);
       if (currentData) {
         setFormInputs((values) => ({ ...values, ...currentData }));
@@ -48,10 +49,11 @@ const UserForm = ({ formSubmit, mode, formData }) => {
       inputMobile.current.focus();
       return false;
     }
-    const dataSave = formSubmit(formInputs); // Call the onSubmit function passed via props
+    const dataSave = formSubmit(formInputs, mode, id); // Call the onSubmit function passed via props
     if (dataSave.status === "success") {
       alert(dataSave.message);
       setFormInputs((values) => ({ username: "", email: "", mobile: "" }));
+      navigate("/");
     } else {
       alert(dataSave.message);
     }
@@ -64,7 +66,7 @@ const UserForm = ({ formSubmit, mode, formData }) => {
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label for="formName" className="form-label">
-                Name
+                Name:
               </label>
               {mode == "new" || mode == "edit" ? (
                 <input
@@ -78,12 +80,12 @@ const UserForm = ({ formSubmit, mode, formData }) => {
                   onChange={handleInput}
                 />
               ) : (
-                "Ravi"
+                <span className="px-2">{formInputs.username || ""}</span>
               )}
             </div>
             <div className="mb-3">
               <label for="formEmail" className="form-label">
-                Email
+                Email:
               </label>
               {mode == "new" || mode == "edit" ? (
                 <input
@@ -97,12 +99,12 @@ const UserForm = ({ formSubmit, mode, formData }) => {
                   onChange={handleInput}
                 />
               ) : (
-                "ravi@gmail.com"
+                <span className="px-2">{formInputs.email || ""}</span>
               )}
             </div>
             <div className="mb-3">
               <label for="formMobile" className="form-label">
-                Mobile
+                Mobile:
               </label>
               {mode == "new" || mode == "edit" ? (
                 <input
@@ -117,7 +119,7 @@ const UserForm = ({ formSubmit, mode, formData }) => {
                   maxLength={10}
                 />
               ) : (
-                "9750895078"
+                <span className="px-2">{formInputs.mobile || ""}</span>
               )}
             </div>
             {mode == "new" ? (
@@ -129,7 +131,9 @@ const UserForm = ({ formSubmit, mode, formData }) => {
                 Update
               </button>
             ) : (
-              ""
+              <button type="submit" className="btn btn-danger">
+                Delete
+              </button>
             )}
           </form>
         </div>

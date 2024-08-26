@@ -13,16 +13,22 @@ function Home({ users }) {
                   {user.email} || {user.mobile}
                 </p>
                 <Link
-                  class="card-link btn btn-warning"
+                  className="card-link btn btn-warning"
                   to={`/user/edit/${user.id}`}
                 >
                   Edit
                 </Link>
                 <Link
-                  class="card-link btn btn-primary"
+                  className="card-link btn btn-primary"
                   to={`/user/view/${user.id}`}
                 >
                   View
+                </Link>
+                <Link
+                  className="card-link btn btn-danger"
+                  to={`/user/delete/${user.id}`}
+                >
+                  Delete
                 </Link>
               </div>
             </div>
